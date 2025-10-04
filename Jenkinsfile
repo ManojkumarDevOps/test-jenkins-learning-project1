@@ -1,24 +1,25 @@
-pipeline{
-    agent any 
+pipeline {
+    agent any
     stages {
-        stage('build'){
+        stage('build') {
             agent {
                 docker {
                     image 'node:18-alpine'
                     reuseNode true
                 }
             }
-            steps{
+            steps {
                 sh '''
-                    npm ci 
-                    npm run build 
+                    npm ci
+                    npm run build
                 '''
             }
         }
-        stage('test'){
+
+        stage('test') {
             parallel {
-                stage ('E2E'){
-                    agent{
+                stage('E2E') {
+                    agent {
                         docker {
                             image 'mcr.microsoft.com/playwright:v1.55.0-noble'
                             reuseNode true
@@ -28,12 +29,26 @@ pipeline{
                         sh '''
                             npm install serve
                             node_modules/.bin/serve -s build &
-                            sleep 10 
+                            sleep 10
                             npx playwright test --reporter=html
                         '''
                     }
+                    // post {
+                    //     always {
+                    //         junit 'jest-results/junit.xml'
+                            // publishHTML([
+                            //     allowMissing: false,
+                            //     alwaysLinkToLastBuild: false,
+                            //     keepAll: true,
+                            //     reportDir: 'playwright-report',
+                            //     reportFiles: 'index.html',
+                            //     reportName: 'Playwright HTML Report'
+                            // ])
+                        // }
+                    // }
                 }
-                stage ('test'){
+
+                stage('unit-test') {
                     agent {
                         docker {
                             image 'node:18-alpine'
@@ -42,12 +57,13 @@ pipeline{
                     }
                     steps {
                         sh '''
-                        npm test 
+                            npm test
                         '''
                     }
-                post {
-                    always {
-                        junit 'jest-results/junit.xml'
+                    post {
+                        always {
+                            junit 'jest-results/junit.xml'
+                        }
                     }
                 }
             }
