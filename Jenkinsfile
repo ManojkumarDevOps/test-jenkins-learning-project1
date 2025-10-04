@@ -28,8 +28,11 @@ pipeline{
                         sh '''
                             npm install serve
                             node_modules/.bin/serve -s build
-                            npx playwright test
+                            npx playwright test --reporter=html
                         '''
+                    }
+                    post {
+                        
                     }
                 }
                 stage ('test'){
@@ -43,6 +46,12 @@ pipeline{
                         sh '''
                         npm test 
                         '''
+                    }
+                    post {
+                        always {
+                            junit 'test-results/junit.xml'
+                            publishHTML([allowmissing :false, alwaysLinkToLastBuild :false, keepAll :true, reportDir :'test-results/html', reportFiles :'index.html', reportName :'HTML Report'])
+                        }
                     }
                 }
             }
