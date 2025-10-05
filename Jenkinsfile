@@ -14,8 +14,8 @@ pipeline {
             }
             steps {
                 sh '''
-                    npm ci
-                    npm run build
+                    # npm ci
+                    # npm run build
                 '''
             }
         }
@@ -31,7 +31,7 @@ pipeline {
                     }
                     steps {
                         sh '''
-                            npm install serve
+                           # npm install serve
                             node_modules/.bin/serve -s build &
                             SERVER_PID=$!
                             sleep 10
@@ -102,9 +102,9 @@ pipeline {
             }
             steps {
                 sh '''
-                    npm install netlify-cli@20.1.1
+                    #npm install netlify-cli@20.1.1
                     node_modules/.bin/netlify --version
-                    npm install node-jq
+                    #npm install node-jq
                     node_modules/.bin/netlify link --id $NETLIFY_PROJECT_ID
                     node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --json > Stage-deploy.json
@@ -156,7 +156,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    npm install netlify-cli@20.1.1
+                    #npm install netlify-cli@20.1.1
                     node_modules/.bin/netlify --version
                     node_modules/.bin/netlify link --id $NETLIFY_PROJECT_ID
                     node_modules/.bin/netlify status
