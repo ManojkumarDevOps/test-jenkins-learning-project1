@@ -78,10 +78,37 @@ pipeline {
                 sh '''
                     #npm install netlify-cli@20.1.1
                     #node_modules/.bin/netlify --version
+                    npm install node-jq
                     node_modules/.bin/netlify link --id $NETLIFY_PROJECT_ID
                     #node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build
+                    node_modules/.bin/netlify deploy --dir=build --json > Stage-deploy.json
+                    url = node_modules/.bin/node-jq -r ".deploy_url" Stage-deploy.json
                     '''
+                script {
+                    env.deploy_url = url
+                }
+            }
+        }
+        stage('E2E stage') {
+            agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.55.1-jammy' 
+                    reuseNode true
+                }
+            }
+            environment{
+                CI_ENVIRONMENT_URL = ${deploy_url}
+            }
+            steps {
+                sh '''
+                    npx playwright test --reporter=html
+                '''
+            }
+            post {
+                always {
+                    junit 'jest-results/junit.xml'
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-stage-report', reportFiles: 'index.html', reportName: 'playwright prod', reportTitles: '', useWrapperFileDirectly: true])
+                }
             }
         }
         stage ('Approval to prod '){
