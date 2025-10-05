@@ -14,8 +14,8 @@ pipeline {
             }
             steps {
                 sh '''
-                    # npm ci
-                    # npm run build
+                    npm ci
+                    npm run build
                 '''
             }
         }
@@ -76,11 +76,11 @@ pipeline {
             }
             steps {
                 sh '''
-                    #npm install netlify-cli@20.1.1
-                    #node_modules/.bin/netlify --version
+                    npm install netlify-cli@20.1.1
+                    node_modules/.bin/netlify --version
                     npm install node-jq
                     node_modules/.bin/netlify link --id $NETLIFY_PROJECT_ID
-                    #node_modules/.bin/netlify status
+                    node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --json > Stage-deploy.json
                     '''
                 script {
@@ -126,10 +126,10 @@ pipeline {
             }
             steps {
                 sh '''
-                    #npm install netlify-cli@20.1.1
-                    #node_modules/.bin/netlify --version
+                    npm install netlify-cli@20.1.1
+                    node_modules/.bin/netlify --version
                     node_modules/.bin/netlify link --id $NETLIFY_PROJECT_ID
-                    #node_modules/.bin/netlify status
+                    node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --prod
                     '''
             }
