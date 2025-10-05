@@ -3,6 +3,7 @@ pipeline {
     environment {
         NETLIFY_PROJECT_ID = '2a717309-0323-42e5-af74-91842593c212'
         NETLIFY_AUTH_TOKEN = credentials('netlify')
+        REACT_APP_VERSION = '1.1.1'
     }
     stages {
         stage('build') {
@@ -14,8 +15,8 @@ pipeline {
             }
             steps {
                 sh '''
-                    # npm ci
-                    # npm run build
+                    npm ci
+                    npm run build
                 '''
             }
         }
@@ -119,6 +120,7 @@ pipeline {
                 }
             }
         }
+        /**      
         stage ('Approval to prod '){
             steps{
                 timeout(time: 10, unit: 'MINUTES') {
@@ -126,7 +128,7 @@ pipeline {
                 }
             }
         }
-  /**      stage('deploy prod') {
+         stage('deploy prod') {
             agent {
                 docker {
                     image 'node:18-alpine'
