@@ -67,6 +67,7 @@ pipeline {
                 }
             }
         }
+        /**
         stage('deploy staging') {
             agent {
                 docker {
@@ -88,7 +89,8 @@ pipeline {
                 }
             }
         }
-        stage('E2E stage') {
+        **/
+        stage('Deploy stage') {
             agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.55.1-jammy' 
@@ -96,10 +98,17 @@ pipeline {
                 }
             }
             environment{
-                CI_ENVIRONMENT_URL = "${env.deployurl}"
+                CI_ENVIRONMENT_URL = 'Just the temp'
             }
             steps {
                 sh '''
+                    npm install netlify-cli@20.1.1
+                    node_modules/.bin/netlify --version
+                    npm install node-jq
+                    node_modules/.bin/netlify link --id $NETLIFY_PROJECT_ID
+                    node_modules/.bin/netlify status
+                    node_modules/.bin/netlify deploy --dir=build --json > Stage-deploy.json
+                    CI_ENVIRONMENT_URL = node_modules/.bin/node-jq -r ".deploy_url" Stage-deploy.json                
                     npx playwright test --reporter=html
                 '''
             }
@@ -117,7 +126,7 @@ pipeline {
                 }
             }
         }
-        stage('deploy prod') {
+  /**      stage('deploy prod') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -134,7 +143,8 @@ pipeline {
                     '''
             }
         }
-        stage('E2E prod') {
+        **/
+        stage('deploy prod') {
             agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.55.1-jammy' 
@@ -146,6 +156,11 @@ pipeline {
             }
             steps {
                 sh '''
+                    npm install netlify-cli@20.1.1
+                    node_modules/.bin/netlify --version
+                    node_modules/.bin/netlify link --id $NETLIFY_PROJECT_ID
+                    node_modules/.bin/netlify status
+                    node_modules/.bin/netlify deploy --dir=build --prod
                     npx playwright test --reporter=html
                 '''
             }
