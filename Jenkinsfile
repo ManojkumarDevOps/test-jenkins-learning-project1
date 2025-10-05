@@ -82,10 +82,9 @@ pipeline {
                     node_modules/.bin/netlify link --id $NETLIFY_PROJECT_ID
                     #node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --json > Stage-deploy.json
-                    url = node_modules/.bin/node-jq -r ".deploy_url" Stage-deploy.json
                     '''
                 script {
-                    env.deploy_url = url
+                    env.deployurl = sh (script:'node_modules/.bin/node-jq -r ".deploy_url" Stage-deploy.json',returnStdout :true)
                 }
             }
         }
@@ -97,7 +96,7 @@ pipeline {
                 }
             }
             environment{
-                CI_ENVIRONMENT_URL = ${deploy_url}
+                CI_ENVIRONMENT_URL = "${env.deployurl}"
             }
             steps {
                 sh '''
