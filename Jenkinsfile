@@ -79,6 +79,7 @@ pipeline {
                     node_modules/.bin/netlify --version
                     node_modules/.bin/netlify link --id $NETLIFY_PROJECT_ID
                     node_modules/.bin/netlify status
+                    node_modules/.bin/netlify depoy --dir=build --prod
                     '''
             }
         }
