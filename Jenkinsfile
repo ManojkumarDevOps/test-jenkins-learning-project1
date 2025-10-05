@@ -34,7 +34,7 @@ pipeline {
                         sh '''
                             npm install serve
                             node_modules/.bin/serve -s build &
-                            SERVER_PID=$!
+                            SERVER_PID=$!  # meaning $! is it will give the PID of the last background running application
                             sleep 10
                             npx playwright test --reporter=html
                             kill $SERVER_PID
